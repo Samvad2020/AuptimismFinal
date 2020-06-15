@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import com.eyalbira.loadingdots.LoadingDots;
 
+import java.util.ArrayList;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -20,7 +22,7 @@ import androidx.fragment.app.Fragment;
 public class ActivityQues extends Fragment {
 
     public interface onCaptureDescription {
-        public void capturedDescription(String s,String type);
+        public void capturedDescription(String s,String type,ArrayList<String> list);
     }
 
     onCaptureDescription someEventListener;
@@ -58,34 +60,44 @@ public class ActivityQues extends Fragment {
             }
         };
         mHandler.postDelayed(mRunnable,5*1000);
+        final ArrayList<String> arrayList=getArguments().getStringArrayList("list");
         final String type=getArguments().getString("type");
         if(type.equals("1")){
             TextView textView= getView().findViewById(R.id.txtstartques);
             textView.setText("Wonderful! Please describe the activity");
+            arrayList.add("Wonderful! Please describe the activity");
         }else if(type.equals("4")){
             TextView textView= getView().findViewById(R.id.txtstartques);
             textView.setText("Wonderful! Please describe the activity");
+            arrayList.add("Wonderful! Please describe the activity");
         }else if(type.equals("5")){
             TextView textView= getView().findViewById(R.id.txtstartques);
             textView.setText("Can you please describe the activity");
+            arrayList.add("Can you please describe the activity");
         }else if(type.equals("6")) {
             TextView textView = getView().findViewById(R.id.txtstartques);
             textView.setText("Can you please describe the activity");
+            arrayList.add("Can you please describe the activity");
         }else if(type.equals("7")){
             TextView textView = getView().findViewById(R.id.txtstartques);
             textView.setText("Great! Please describe the activity");
+            arrayList.add("Great! Please describe the activity");
         }else if(type.equals("9")){
             TextView textView = getView().findViewById(R.id.txtstartques);
             textView.setText("Can you please describe the activity");
+            arrayList.add("Can you please describe the activity");
         }else if(type.equals("11")){
             TextView textView = getView().findViewById(R.id.txtstartques);
             textView.setText("Oh no! please share the details");
+            arrayList.add("Oh no! please share the details");
         }else if(type.equals("12")){
             TextView textView = getView().findViewById(R.id.txtstartques);
             textView.setText("Oh no! please share the details");
+            arrayList.add("Oh no! please share the details");
         }else if(type.equals("14")){
             TextView textView = getView().findViewById(R.id.txtstartques);
             textView.setText("Then what happened ?");
+            arrayList.add("Then what happened ?");
         }
         final Button submit=getView().findViewById(R.id.submitButton);
         submit.setOnClickListener(new View.OnClickListener() {
@@ -95,7 +107,7 @@ public class ActivityQues extends Fragment {
                 String desc=editText.getText().toString();
                 submit.setEnabled(false);
                 editText.setEnabled(false);
-                someEventListener.capturedDescription(desc,type);
+                someEventListener.capturedDescription(desc,type,arrayList);
             }
         });
     }

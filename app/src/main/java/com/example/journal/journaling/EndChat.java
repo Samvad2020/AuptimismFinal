@@ -5,7 +5,9 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.eyalbira.loadingdots.LoadingDots;
 
@@ -14,6 +16,22 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class EndChat extends Fragment {
+    public interface onEndChat {
+        public void chatEnded();
+    }
+
+    onEndChat someEventListener;
+    TextView textView;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        try {
+            someEventListener = (onEndChat) getActivity();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString() + " must implement onSomeEventListener");
+        }
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -37,5 +55,13 @@ public class EndChat extends Fragment {
             }
         };
         mHandler.postDelayed(mRunnable,5*1000);
+        final Button button=getView().findViewById(R.id.getsummary);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                someEventListener.chatEnded();
+                button.setEnabled(false);
+            }
+        });
     }
 }

@@ -1,10 +1,13 @@
 package com.example.journal;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ScrollView;
@@ -22,13 +25,14 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeEventListener,ActivityInfoLanding.onRecordingSelectedListener,ActivityQues.onCaptureDescription
 ,MediaShare.onBooleanMediaShare,MediaUpload.onMediaShareDone,AnythingElse.onAnythingElseSelected,EatingHabbits.onBooleanEatingHabitChanged
 ,DescriptionBox.onMedicationStarted,WhenHappened.onWhenHappened,WhereHappened.onWhereDidItHappen,MoodOfChild.onMoodOfChild,TimeOfChild.onTimeOfChild
-,WhatDidYouDo.onWhatDidYouDo,PossibleTriggers.onPossibleTrigger,OnBoard.onNameProvided{
+,WhatDidYouDo.onWhatDidYouDo,PossibleTriggers.onPossibleTrigger,OnBoard.onNameProvided,EndChat.onEndChat{
     FragmentManager fragmentManager;
     public static final String MY_PREFS_NAME = "MyPrefsFile";
     ScrollView scrollview;
     private DatabaseReference mdatabase;
     String person;
     String time;
+    ArrayList<String> arrayList=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
         if(firstTime){
             Bundle bundle=new Bundle();
             bundle.putString("type","15");
+            bundle.putStringArrayList("list",arrayList);
             OnBoard onBoard=new OnBoard();
             onBoard.setArguments(bundle);
             fragmentTransaction.add(R.id.container,onBoard);
@@ -73,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             MoodMeter moodMeter=new MoodMeter();
             Bundle bundle1=new Bundle();
             bundle1.putString("moodMeterText","Nice to see you back again!\nHow's "+person+" day going?");
+            arrayList.add("Nice to see you back again!\nHow's "+person+" day going?");
             moodMeter.setArguments(bundle1);
             fragmentTransaction.add(R.id.container,moodMeter);
             Toast.makeText(this, "Welcome back", Toast.LENGTH_SHORT).show();
@@ -83,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
 
     @Override
     public void someEvent(String s) {
-
+        arrayList.add(s);
         Bundle bundle = new Bundle();
         bundle.putString("mood", s);
         MoodResponse moodResponse=new MoodResponse();
@@ -97,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             bundle1.putString("ques1","let's save all that happened.");
             bundle1.putString("ques2","Which activity made your day?");
             bundle1.putString("type","1");
+            arrayList.add("Which activity made your day?");
             ActivityInfoLanding activityInfoLanding=new ActivityInfoLanding();
             activityInfoLanding.setArguments(bundle1);
             fragmentTransaction.add(R.id.container,activityInfoLanding);
@@ -104,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             mdatabase.child(person).child(time).child("How was Day").setValue("Happy");
             Bundle bundle1=new Bundle();
             bundle1.putString("content","That's great to know ! Do you remember any positive event that happened today?");
+            arrayList.add("Do you remember any positive event that happened today?");
             bundle1.putString("type","7");
             MediaShare mediaShare=new MediaShare();
             mediaShare.setArguments(bundle1);
@@ -116,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             String n1=prefs.getString("Name","child");
             bundle1.putString("ques2","Did "+n1+" face any issue in:");
+            arrayList.add("Did "+n1+" face any issue in:");
             bundle1.putString("type","9");
             ActivityInfoLanding activityInfoLanding=new ActivityInfoLanding();
             activityInfoLanding.setArguments(bundle1);
@@ -126,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             String n1=prefs.getString("Name","child");
             bundle1.putString("content","Oh ! Sorry to know that ! Is "+n1+" fine?");
+            arrayList.add("Oh ! Sorry to know that ! Is "+n1+" fine?");
             bundle1.putString("type","10");
             MediaShare mediaShare=new MediaShare();
             mediaShare.setArguments(bundle1);
@@ -140,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
 
     @Override
     public void onRecordingSelected(String s,String type) {
+        arrayList.add(s);
         mdatabase.child(person).child(time).child("Activity").child("name").setValue(s);
         Bundle bundle = new Bundle();
         bundle.putString("mood", s);
@@ -150,45 +161,57 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
         ActivityQues activityQues=new ActivityQues();
         Bundle bundle1=new Bundle();
         bundle1.putString("type",type);
+        bundle1.putStringArrayList("list",arrayList);
         activityQues.setArguments(bundle1);
         fragmentTransaction.add(R.id.container,activityQues);
         fragmentTransaction.commit();
     }
 
     @Override
-    public void capturedDescription(String s,String type) {
+    public void capturedDescription(String s,String type,ArrayList<String> list) {
+        arrayList=list;
+        arrayList.add(s);
         mdatabase.child(person).child(time).child("Activity").child("information").setValue(s);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         Bundle bundle = new Bundle();
 
         if(type.equals("1")){
             bundle.putString("content","Is there a picture or video you want to share for sweet memories ?");
+            arrayList.add("Is there a picture or video you want to share for sweet memories ?");
             bundle.putString("type", type);
         }else if(type.equals("4")){
             bundle.putString("content","Is there a picture or video you want to share for sweet memories ?");
+            arrayList.add("Is there a picture or video you want to share for sweet memories ?");
             bundle.putString("type", type);
         }else if(type.equals("5")){
             bundle.putString("content","Is there a picture or video you want to share for the same ?");
+            arrayList.add("Is there a picture or video you want to share for the same ?");
             bundle.putString("type", type);
         }else if(type.equals("7")){
             bundle.putString("content","Is there a picture or video you want to share for sweet memories ?");
+            arrayList.add("Is there a picture or video you want to share for sweet memories ?");
             bundle.putString("type", "8");
         }else if(type.equals("9")){
             bundle.putString("content","Is there a picture or video you want to share for the same ?");
+            arrayList.add("Is there a picture or video you want to share for the same ?");
             bundle.putString("type", type);
         }else if(type.equals("6")){
             bundle.putString("content","Is there a picture or video you want to share for the same ?");
+            arrayList.add("Is there a picture or video you want to share for the same ?");
             bundle.putString("type", type);
         }else if(type.equals("11")){
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             String n1=prefs.getString("Name","child");
             bundle.putString("content","Does "+n1+" had meltdown ?");
+            arrayList.add("Does "+n1+" had meltdown ?");
             bundle.putString("type", "12");
         }else if(type.equals("12")){
             bundle.putString("content","Is there a picture or video you want to share for the same ?");
+            arrayList.add("Is there a picture or video you want to share for the same ?");
             bundle.putString("type", "13");
         }else if(type.equals("14")){
             bundle.putString("content","Is there a picture or video you want to share for the same ?");
+            arrayList.add("Is there a picture or video you want to share for the same ?");
             bundle.putString("type", "14");
         }
         MediaShare mediaShare=new MediaShare();
@@ -205,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("NO");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -213,15 +237,18 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 bundle1.putString("type","1");
                 anythingElse.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container,anythingElse);
+                arrayList.add("Anything else you would like to share");
                 fragmentTransaction.commit();
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
                 Bundle bundle1=new Bundle();
                 bundle1.putString("type","1");
+                arrayList.add("That's great to know. Please upload it.");
                 MediaUpload mediaUpload=new MediaUpload();
                 mediaUpload.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container,mediaUpload);
@@ -231,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("No");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -239,6 +267,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                 String n1=prefs.getString("Name","child");
                 bundle1.putString("content", "Well great ! \nWhat about the sleep ? \nDid "+n1+" sleep well?");
+                arrayList.add("Well great ! \nWhat about the sleep ? \nDid "+n1+" sleep well?");
                 MediaShare mediaShare = new MediaShare();
                 mediaShare.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container, mediaShare);
@@ -246,6 +275,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -261,6 +291,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("NO");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -274,6 +305,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -284,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("NO");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -292,12 +325,14 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
                 Bundle bundle1 = new Bundle();
                 bundle1.putString("type", "4");
                 MediaUpload mediaUpload=new MediaUpload();
+                arrayList.add("That's great to know. Please upload it.");
                 mediaUpload.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container,mediaUpload);
                 fragmentTransaction.commit();
@@ -306,18 +341,21 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("No");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
                 Bundle bundle1=new Bundle();
                 bundle1.putString("type","5");
                 WhenHappened whenHappened=new WhenHappened();
+                arrayList.add("When did it happen?");
                 whenHappened.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container,whenHappened);
                 fragmentTransaction.commit();
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -325,6 +363,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 bundle1.putString("type", "5");
                 MediaUpload mediaUpload=new MediaUpload();
                 mediaUpload.setArguments(bundle1);
+                arrayList.add("That's great to know. Please upload it.");
                 fragmentTransaction.add(R.id.container,mediaUpload);
                 fragmentTransaction.commit();
             }
@@ -332,6 +371,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("No");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -339,11 +379,13 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 bundle1.putString("type","6");
                 WhenHappened whenHappened=new WhenHappened();
                 whenHappened.setArguments(bundle1);
+                arrayList.add("When did it happen?");
                 fragmentTransaction.add(R.id.container,whenHappened);
                 fragmentTransaction.commit();
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -351,6 +393,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 bundle1.putString("type", "6");
                 MediaUpload mediaUpload=new MediaUpload();
                 mediaUpload.setArguments(bundle1);
+                arrayList.add("That's great to know. Please upload it.");
                 fragmentTransaction.add(R.id.container,mediaUpload);
                 fragmentTransaction.commit();
             }
@@ -358,6 +401,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle=new Bundle();
                 bundle.putString("mood","NO");
+                arrayList.add("No");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -366,10 +410,12 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 bundle1.putString("type","8");
                 anythingElse.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container, anythingElse);
+                arrayList.add("Anything else you would like to share");
                 fragmentTransaction.commit();
             }else{
                 Bundle bundle=new Bundle();
                 bundle.putString("mood","YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -380,6 +426,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                 String n1=prefs.getString("Name","child");
                 bundle1.putString("ques2","Did "+n1+" show any progress in");
+                arrayList.add("Did "+n1+" show any progress in");
                 ActivityInfoLanding infoLanding=new ActivityInfoLanding();
                 infoLanding.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container,infoLanding);
@@ -389,6 +436,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("No");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -397,10 +445,12 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 bundle1.putString("type","8");
                 anythingElse.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container, anythingElse);
+                arrayList.add("Anything else you would like to share");
                 fragmentTransaction.commit();
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -408,6 +458,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 bundle1.putString("type", "8");
                 MediaUpload mediaUpload=new MediaUpload();
                 mediaUpload.setArguments(bundle1);
+                arrayList.add("That's great to know. Please upload it.");
                 fragmentTransaction.add(R.id.container,mediaUpload);
                 fragmentTransaction.commit();
             }
@@ -415,6 +466,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("No");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -422,11 +474,13 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 Bundle bundle1=new Bundle();
                 bundle1.putString("type","9");
                 whenHappened.setArguments(bundle1);
+                arrayList.add("When did it happen?");
                 fragmentTransaction.add(R.id.container,whenHappened);
                 fragmentTransaction.commit();
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -435,12 +489,14 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 MediaUpload mediaUpload=new MediaUpload();
                 mediaUpload.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container,mediaUpload);
+                arrayList.add("That's great to know. Please upload it.");
                 fragmentTransaction.commit();
             }
         }else if(type.equals("10")){
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("No");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -448,6 +504,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                 String n1=prefs.getString("Name","child");
                 bundle1.putString("content","Is "+n1+" suffering fron any medical issue?");
+                arrayList.add("Is "+n1+" suffering fron any medical issue?");
                 bundle1.putString("type","11");
                 MediaShare mediaShare=new MediaShare();
                 mediaShare.setArguments(bundle1);
@@ -456,6 +513,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -464,6 +522,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                 String n1=prefs.getString("Name","child");
                 bundle1.putString("content","Does "+n1+" had meltdown ?");
+                arrayList.add("Does "+n1+" had meltdown ?");
                 bundle1.putString("type", "12");
                 mediaShare.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container,mediaShare);
@@ -473,6 +532,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("No");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -481,6 +541,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                 String n1=prefs.getString("Name","child");
                 bundle1.putString("content","Does "+n1+" had meltdown ?");
+                arrayList.add("Does "+n1+" had meltdown ?");
                 bundle1.putString("type", "12");
                 mediaShare.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container,mediaShare);
@@ -488,6 +549,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -495,6 +557,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 Bundle bundle1=new Bundle();
                 bundle1.putString("type","11");
                 activityQues.setArguments(bundle1);
+                bundle1.putStringArrayList("list",arrayList);
                 fragmentTransaction.add(R.id.container,activityQues);
                 fragmentTransaction.commit();
             }
@@ -502,6 +565,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("No");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -510,11 +574,13 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 ActivityQues activityQues=new ActivityQues();
                 bundle1.putString("type","14");
                 activityQues.setArguments(bundle1);
+                bundle1.putStringArrayList("list",arrayList);
                 fragmentTransaction.add(R.id.container,activityQues);
                 fragmentTransaction.commit();
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -524,6 +590,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 bundle1.putString("greeting","That was difficult!");
                 bundle1.putString("ques1","let's save all that happened.");
                 bundle1.putString("ques2","During which activity that happened");
+                arrayList.add("During which activity that happened");
                 infoLanding.setArguments(bundle1);
                 fragmentTransaction.add(R.id.container,infoLanding);
                 fragmentTransaction.commit();
@@ -532,6 +599,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("No");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -539,11 +607,13 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 Bundle bundle1=new Bundle();
                 bundle1.putString("type","13");
                 whenHappened.setArguments(bundle1);
+                arrayList.add("When did it happen?");
                 fragmentTransaction.add(R.id.container,whenHappened);
                 fragmentTransaction.commit();
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -551,6 +621,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 bundle1.putString("type", "13");
                 MediaUpload mediaUpload=new MediaUpload();
                 mediaUpload.setArguments(bundle1);
+                arrayList.add("That's great to know. Please upload it.");
                 fragmentTransaction.add(R.id.container,mediaUpload);
                 fragmentTransaction.commit();
             }
@@ -558,6 +629,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             if(!share){
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "NO");
+                arrayList.add("No");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -565,11 +637,13 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 Bundle bundle1=new Bundle();
                 bundle1.putString("type","14");
                 whenHappened.setArguments(bundle1);
+                arrayList.add("When did it happen?");
                 fragmentTransaction.add(R.id.container,whenHappened);
                 fragmentTransaction.commit();
             }else{
                 Bundle bundle = new Bundle();
                 bundle.putString("mood", "YES");
+                arrayList.add("Yes");
                 MoodResponse moodResponse=new MoodResponse();
                 moodResponse.setArguments(bundle);
                 fragmentTransaction.add(R.id.container,moodResponse);
@@ -577,6 +651,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                 bundle1.putString("type", "14");
                 MediaUpload mediaUpload=new MediaUpload();
                 mediaUpload.setArguments(bundle1);
+                arrayList.add("That's great to know. Please upload it.");
                 fragmentTransaction.add(R.id.container,mediaUpload);
                 fragmentTransaction.commit();
             }
@@ -595,6 +670,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             Bundle bundle1=new Bundle();
             bundle1.putString("type","1");
             anythingElse.setArguments(bundle1);
+            arrayList.add("Anything else you would like to share");
             fragmentTransaction.add(R.id.container, anythingElse);
             fragmentTransaction.commit();
         }
@@ -606,6 +682,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             Bundle bundle1=new Bundle();
             bundle1.putString("type","5");
             WhenHappened whenHappened=new WhenHappened();
+            arrayList.add("When did it happen?");
             whenHappened.setArguments(bundle1);
             fragmentTransaction.add(R.id.container,whenHappened);
             fragmentTransaction.commit();
@@ -614,6 +691,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             Bundle bundle1=new Bundle();
             bundle1.putString("type","6");
             WhenHappened whenHappened=new WhenHappened();
+            arrayList.add("When did it happen?");
             whenHappened.setArguments(bundle1);
             fragmentTransaction.add(R.id.container,whenHappened);
             fragmentTransaction.commit();
@@ -622,6 +700,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             AnythingElse anythingElse=new AnythingElse();
             Bundle bundle1=new Bundle();
             bundle1.putString("type","8");
+            arrayList.add("Anything else you would like to share");
             anythingElse.setArguments(bundle1);
             fragmentTransaction.add(R.id.container, anythingElse);
             fragmentTransaction.commit();
@@ -631,6 +710,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             Bundle bundle1=new Bundle();
             bundle1.putString("type","9");
             whenHappened.setArguments(bundle1);
+            arrayList.add("When did it happen?");
             fragmentTransaction.add(R.id.container,whenHappened);
             fragmentTransaction.commit();
         }
@@ -639,10 +719,12 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             Bundle bundle1=new Bundle();
             bundle1.putString("type","13");
             whenHappened.setArguments(bundle1);
+            arrayList.add("When did it happen?");
             fragmentTransaction.add(R.id.container,whenHappened);
             fragmentTransaction.commit();
         }
         if(type.equals("14")){
+            arrayList.add("When did it happen?");
             WhenHappened whenHappened=new WhenHappened();
             Bundle bundle1=new Bundle();
             bundle1.putString("type","14");
@@ -655,6 +737,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
 
     @Override
     public void onElseSelected(String share,String type) {
+        arrayList.add(share);
         mdatabase.child(person).child(time).child("AnythingElse").setValue(share);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         if(share.equals("None")){
@@ -663,6 +746,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             MoodResponse moodResponse=new MoodResponse();
             moodResponse.setArguments(bundle);
             fragmentTransaction.add(R.id.container,moodResponse);
+            arrayList.add("Now let's have a look at what all did the child eat?");
             fragmentTransaction.add(R.id.container,new EatingHabbits());
             fragmentTransaction.commit();
         }else if(share.equals("Progress")){
@@ -677,6 +761,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             bundle1.putString("greeting","Yay ! I am really keen to know");
             bundle1.putString("ques1","let's save all that happened.");
             bundle1.putString("ques2","Which activity made your day?");
+            arrayList.add("Which activity made your day?");
             infoLanding.setArguments(bundle1);
             fragmentTransaction.add(R.id.container,infoLanding);
             fragmentTransaction.commit();
@@ -692,6 +777,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             bundle1.putString("greeting","That was difficult!");
             bundle1.putString("ques1","let's save all that happened.");
             bundle1.putString("ques2","During which activity that happened");
+            arrayList.add("During which activity that happened");
             infoLanding.setArguments(bundle1);
             fragmentTransaction.add(R.id.container,infoLanding);
             fragmentTransaction.commit();
@@ -707,6 +793,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             bundle1.putString("greeting","That was difficult!");
             bundle1.putString("ques1","let's save all that happened.");
             bundle1.putString("ques2","The child faced Issues in?");
+            arrayList.add("The child faced Issues in?");
             infoLanding.setArguments(bundle1);
             fragmentTransaction.add(R.id.container,infoLanding);
             fragmentTransaction.commit();
@@ -720,6 +807,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
         if(share){
             Bundle bundle = new Bundle();
             bundle.putString("mood", "Yes");
+            arrayList.add("Yes");
             MoodResponse moodResponse=new MoodResponse();
             moodResponse.setArguments(bundle);
             fragmentTransaction.add(R.id.container,moodResponse);
@@ -732,12 +820,14 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
         }else{
             Bundle bundle = new Bundle();
             bundle.putString("mood", "No");
+            arrayList.add("No");
             MoodResponse moodResponse=new MoodResponse();
             moodResponse.setArguments(bundle);
             fragmentTransaction.add(R.id.container,moodResponse);
             Bundle bundle1 = new Bundle();
             bundle1.putString("type", "2");
             bundle1.putString("content","Did you start any medication?");
+            arrayList.add("Did you start any medication?");
             MediaShare mediaShare=new MediaShare();
             mediaShare.setArguments(bundle1);
             fragmentTransaction.add(R.id.container,mediaShare);
@@ -748,13 +838,14 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
 
     @Override
     public void someMedicStarted(String share,String type) {
-
+        arrayList.add(share);
         if(type.equals("1")) {
             mdatabase.child(person).child(time).child("SomeFoodChanges").setValue(share);
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             Bundle bundle = new Bundle();
             bundle.putString("type", "2");
             bundle.putString("content", "Did you start any medication?");
+            arrayList.add("Did you start any medication?");
             MediaShare mediaShare = new MediaShare();
             mediaShare.setArguments(bundle);
             fragmentTransaction.add(R.id.container, mediaShare);
@@ -767,6 +858,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             String n1=prefs.getString("Name","child");
             bundle.putString("content", "Well great ! \nWhat about the sleep ? \nDid "+n1+" sleep well?");
+            arrayList.add("Well great ! \nWhat about the sleep ? \nDid "+n1+" sleep well?");
             MediaShare mediaShare = new MediaShare();
             mediaShare.setArguments(bundle);
             fragmentTransaction.add(R.id.container, mediaShare);
@@ -786,6 +878,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
 
     @Override
     public void onwhen(String when, String type) {
+        arrayList.add(when);
         mdatabase.child(person).child(time).child("When").setValue(when);
         Toast.makeText(this, when, Toast.LENGTH_SHORT).show();
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
@@ -798,6 +891,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
         bundle1.putString("type",type);
         WhereHappened whereHappened=new WhereHappened();
         whereHappened.setArguments(bundle1);
+        arrayList.add("Where did it happen?");
         fragmentTransaction.add(R.id.container,whereHappened);
         fragmentTransaction.commit();
 
@@ -805,25 +899,31 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
 
     @Override
     public void whereHappened(String when, String type) {
+        arrayList.add(when);
         mdatabase.child(person).child(time).child("Where").setValue(when);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         MoodOfChild moodOfChild=new MoodOfChild();
         Bundle bundle=new Bundle();
         bundle.putString("type",type);
         moodOfChild.setArguments(bundle);
+        arrayList.add("How was the child feeling at that time?");
         fragmentTransaction.add(R.id.container,moodOfChild);
         fragmentTransaction.commit();
 
     }
 
     @Override
-    public void childmoodListSelected(ArrayList<String> arrayList, String type) {
-        mdatabase.child(person).child(time).child("childMood").setValue(arrayList);
+    public void childmoodListSelected(ArrayList<String> arraylist, String type) {
+        for(int i=0;i<arraylist.size();i++){
+            arrayList.add(arraylist.get(i));
+        }
+        mdatabase.child(person).child(time).child("childMood").setValue(arraylist);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         TimeOfChild timeOfChild=new TimeOfChild();
         Bundle bundle=new Bundle();
         bundle.putString("type",type);
         timeOfChild.setArguments(bundle);
+        arrayList.add("For how long was the child having trouble ?");
         fragmentTransaction.add(R.id.container,timeOfChild);
         fragmentTransaction.commit();
 
@@ -831,6 +931,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
 
     @Override
     public void someTime(String desc, String type) {
+        arrayList.add(desc);
         mdatabase.child(person).child(time).child("HowLong").setValue(desc);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         WhatDidYouDo whatDidYouDo=new WhatDidYouDo();
@@ -838,11 +939,13 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
         bundle.putString("type",type);
         whatDidYouDo.setArguments(bundle);
         fragmentTransaction.add(R.id.container,whatDidYouDo);
+        arrayList.add("What did you do for this?");
         fragmentTransaction.commit();
     }
 
     @Override
     public void whatYouDo(String when, String type) {
+        arrayList.add(when);
         mdatabase.child(person).child(time).child("whatYouDo").setValue(when);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         if(type.equals("9")){
@@ -850,6 +953,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             Bundle bundle1=new Bundle();
             bundle1.putString("type","9");
             anythingElse.setArguments(bundle1);
+            arrayList.add("Anything else you would like to share");
             fragmentTransaction.add(R.id.container,anythingElse);
         }else if(type.equals("6")){
             fragmentTransaction.add(R.id.container,new EndChat());
@@ -858,6 +962,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             Bundle bundle = new Bundle();
             bundle.putString("type", type);
             possibleTriggers.setArguments(bundle);
+            arrayList.add("Where might be the possible trigger?");
             fragmentTransaction.add(R.id.container, possibleTriggers);
         }
         fragmentTransaction.commit();
@@ -866,6 +971,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
 
     @Override
     public void possibleTrigger(String when, String type) {
+        arrayList.add(when);
         mdatabase.child(person).child(time).child("Trigger").setValue(when);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if(type.equals("13") || type.equals("14")){
@@ -873,6 +979,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             Bundle bundle1=new Bundle();
             bundle1.putString("type","13");
             anythingElse.setArguments(bundle1);
+            arrayList.add("Anything else you would like to share");
             fragmentTransaction.add(R.id.container,anythingElse);
         }else {
             fragmentTransaction.add(R.id.container, new EndChat());
@@ -882,7 +989,9 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
     }
 
     @Override
-    public void someNameAdded(String name,String type) {
+    public void someNameAdded(String name,String type,ArrayList<String> list) {
+        //arrayList=list;
+        arrayList.add(name);
         if(type.equals("15")){
             person=name;
             Bundle bundle=new Bundle();
@@ -924,7 +1033,28 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
 
     @Override
     public void onBackPressed() {
-        Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to save the data before exiting?") .setTitle("Save As")
+                .setCancelable(false)
+                .setPositiveButton("Save and Exit", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("Exit without saving", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finishAndRemoveTask();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
 
+    }
+
+    @Override
+    public void chatEnded() {
+        Intent intent=new Intent(this,Summary.class);
+        intent.putExtra("list",arrayList);
+        startActivity(intent);
     }
 }

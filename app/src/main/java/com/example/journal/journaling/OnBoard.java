@@ -12,13 +12,15 @@ import android.widget.TextView;
 
 import com.eyalbira.loadingdots.LoadingDots;
 
+import java.util.ArrayList;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class OnBoard extends Fragment {
     public interface onNameProvided {
-        public void someNameAdded(String name,String type);
+        public void someNameAdded(String name,String type,ArrayList<String> list);
     }
 
     onNameProvided someEventListener;
@@ -54,12 +56,16 @@ public class OnBoard extends Fragment {
             }
         };
         mHandler.postDelayed(mRunnable,5*1000);
+        final ArrayList<String> arrayList=getArguments().getStringArrayList("list");
         TextView textView=getView().findViewById(R.id.txt_name);
         if(getArguments().getString("type").equals("15")){
+    //        arrayList.add("Hello ! Welcome Onboard.\n\nI'm you journal assistant\n\nMy name is Diary\n\nWhat's your little one's name?");
             textView.setText("Hello ! Welcome Onboard.\n\nI'm you journal assistant\n\nMy name is Diary\n\nWhat's your little one's name?");
         }else if(getArguments().getString("type").equals("16")){
+//            arrayList.add("What does \" +getArguments().getString(\"name\")+\" eat daily?");
             textView.setText("What does " +getArguments().getString("name")+" eat daily?");
         }else if(getArguments().getString("type").equals("17")){
+  //          arrayList.add("What is regular sleep time of "+getArguments().getString("name")+"?");
             textView.setText("What is regular sleep time of "+getArguments().getString("name")+"?");
         }
         final Button button=getView().findViewById(R.id.submitIntroduction);
@@ -68,7 +74,7 @@ public class OnBoard extends Fragment {
             @Override
             public void onClick(View view) {
                 String name=editText.getText().toString();
-                someEventListener.someNameAdded(name,getArguments().getString("type"));
+                someEventListener.someNameAdded(name,getArguments().getString("type"),arrayList);
                 editText.setEnabled(false);
                 button.setEnabled(false);
             }
