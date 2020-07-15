@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tagCardView"
+    app:cardCornerRadius="15dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginBottom="5dp"
+    app:cardElevation="5dp"
+    app:cardMaxElevation="10dp"
+    app:cardUseCompatPadding="true"
+    android:layout_marginTop="5dp"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:background="#fff"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+        <ImageView
+            android:layout_width="200dp"
+            android:src="@drawable/logo"
+            android:layout_height="150dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/txt_title"
+            android:text="Top 10 sensory based activities for home."
+            android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="20dp"
+            android:src="@drawable/profile"
+            android:layout_height="20dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Uma Bachao"
+            android:layout_marginLeft="10dp"
+            android:gravity="center|left"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+</LinearLayout>
+    </androidx.cardview.widget.CardView>

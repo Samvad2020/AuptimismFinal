@@ -2,6 +2,7 @@
 <LinearLayout android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:orientation="vertical"
+    android:layout_marginTop="20dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <com.eyalbira.loadingdots.LoadingDots
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -27,18 +28,31 @@
         android:id="@+id/rootLayout"
         android:visibility="gone"
         android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profileImage"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/profile"
+            app:civ_border_width="2dp"
+            android:layout_gravity="center"
+            app:civ_border_color="#fff"/>
 <TextView android:layout_width="wrap_content"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     android:textStyle="bold"
-    android:layout_marginTop="20dp"
     android:id="@+id/txtstartques"
-    android:layout_marginLeft="10dp"
+    android:layout_marginLeft="5dp"
     android:background="@drawable/background"
     android:textSize="15dp"
     android:textColor="#fff"
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android" />
+        </LinearLayout>
     <EditText
         android:layout_width="200dp"
         android:layout_gravity="right"

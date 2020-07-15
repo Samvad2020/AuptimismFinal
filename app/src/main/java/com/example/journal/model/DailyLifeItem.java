@@ -1,18 +1,38 @@
-package com.example.journal;
+package com.example.journal.model;
 
 public class DailyLifeItem {
     private String name;
     private String timeLeft;
     private String timeSpent;
     private String difficulty;
+    private int progress;
     private int id;
+    private String imgActivityUrl;
 
-    public DailyLifeItem(String name, String timeLeft, String timeSpent, String difficulty,int id) {
+    public DailyLifeItem(String name, String timeLeft, String timeSpent, String difficulty, int progress, int id, String imgActivityUrl) {
         this.name = name;
         this.timeLeft = timeLeft;
         this.timeSpent = timeSpent;
         this.difficulty = difficulty;
-        this.id=id;
+        this.progress = progress;
+        this.id = id;
+        this.imgActivityUrl=imgActivityUrl;
+    }
+
+    public String getImgActivityUrl() {
+        return imgActivityUrl;
+    }
+
+    public void setImgActivityUrl(String imgActivityUrl) {
+        this.imgActivityUrl = imgActivityUrl;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
     }
 
     public int getId() {

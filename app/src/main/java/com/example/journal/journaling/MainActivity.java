@@ -1,18 +1,22 @@
-package com.example.journal;
+package com.example.journal.journaling;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.example.journal.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -22,10 +26,10 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeEventListener,ActivityInfoLanding.onRecordingSelectedListener,ActivityQues.onCaptureDescription
-,MediaShare.onBooleanMediaShare,MediaUpload.onMediaShareDone,AnythingElse.onAnythingElseSelected,EatingHabbits.onBooleanEatingHabitChanged
-,DescriptionBox.onMedicationStarted,WhenHappened.onWhenHappened,WhereHappened.onWhereDidItHappen,MoodOfChild.onMoodOfChild,TimeOfChild.onTimeOfChild
-,WhatDidYouDo.onWhatDidYouDo,PossibleTriggers.onPossibleTrigger,OnBoard.onNameProvided,EndChat.onEndChat{
+public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeEventListener, ActivityInfoLanding.onRecordingSelectedListener, ActivityQues.onCaptureDescription
+, MediaShare.onBooleanMediaShare, MediaUpload.onMediaShareDone, AnythingElse.onAnythingElseSelected, EatingHabbits.onBooleanEatingHabitChanged
+, DescriptionBox.onMedicationStarted, WhenHappened.onWhenHappened, WhereHappened.onWhereDidItHappen, MoodOfChild.onMoodOfChild, TimeOfChild.onTimeOfChild
+, WhatDidYouDo.onWhatDidYouDo, PossibleTriggers.onPossibleTrigger, OnBoard.onNameProvided, EndChat.onEndChat{
     FragmentManager fragmentManager;
     public static final String MY_PREFS_NAME = "MyPrefsFile";
     ScrollView scrollview;
@@ -33,7 +37,10 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
     String person;
     String time;
     ArrayList<String> arrayList=new ArrayList<>();
+    int upOrDown=0;
+    Timer t;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
         editor.putString("time",time);
         editor.apply();
         scrollview = ((ScrollView) findViewById(R.id.rootScrollView));
-        Timer t = new Timer();
+        t = new Timer();
         t.scheduleAtFixedRate(new TimerTask() {
 
                                   @Override
@@ -61,6 +68,36 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
                               },
                 0,
                 500);
+        scrollview.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+                if(i3>i1){
+                    upOrDown=1;
+                    t.cancel();
+                }else{
+                    if(upOrDown==1){
+                        upOrDown=0;
+                        t=new Timer();
+                        t.scheduleAtFixedRate(new TimerTask() {
+
+                                                  @Override
+                                                  public void run() {
+                                                      scrollview.postDelayed(new Runnable() {
+                                                          @Override
+                                                          public void run() {
+                                                              scrollview.fullScroll(ScrollView.FOCUS_DOWN);
+                                                          }
+                                                      }, 0);
+                                                  }
+
+                                              },
+                                0,
+                                500);
+                    }
+                }
+
+            }
+        });
         fragmentManager=getSupportFragmentManager();
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         boolean firstTime=prefs.getBoolean("FirstTime",true);
@@ -97,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.container,moodResponse);
         if(s.equals("Wonderful")){
-            mdatabase.child(person).child(time).child("How was Day").setValue("Wonderful");
+            mdatabase.child(person).child("Journal").child(time).child("How was Day").setValue("Wonderful");
             Bundle bundle1=new Bundle();
             bundle1.putString("greeting","Yay ! I am really keen to know");
             bundle1.putString("ques1","let's save all that happened.");
@@ -108,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             activityInfoLanding.setArguments(bundle1);
             fragmentTransaction.add(R.id.container,activityInfoLanding);
         }else if(s.equals("Happy")){
-            mdatabase.child(person).child(time).child("How was Day").setValue("Happy");
+            mdatabase.child(person).child("Journal").child(time).child("How was Day").setValue("Happy");
             Bundle bundle1=new Bundle();
             bundle1.putString("content","That's great to know ! Do you remember any positive event that happened today?");
             arrayList.add("Do you remember any positive event that happened today?");
@@ -117,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             mediaShare.setArguments(bundle1);
             fragmentTransaction.add(R.id.container,mediaShare);
         }else if(s.equals("Difficult")){
-            mdatabase.child(person).child(time).child("How was Day").setValue("Difficult");
+            mdatabase.child(person).child("Journal").child(time).child("How was Day").setValue("Difficult");
             Bundle bundle1=new Bundle();
             bundle1.putString("greeting","You seem upset");
             bundle1.putString("ques1","let's save all that happened.");
@@ -130,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             activityInfoLanding.setArguments(bundle1);
             fragmentTransaction.add(R.id.container,activityInfoLanding);
         }else{
-            mdatabase.child(person).child(time).child("How was Day").setValue("Very Difficult");
+            mdatabase.child(person).child("Journal").child(time).child("How was Day").setValue("Very Difficult");
             Bundle bundle1=new Bundle();
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             String n1=prefs.getString("Name","child");
@@ -151,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
     @Override
     public void onRecordingSelected(String s,String type) {
         arrayList.add(s);
-        mdatabase.child(person).child(time).child("Activity").child("name").setValue(s);
+        mdatabase.child(person).child("Journal").child(time).child("Activity").child(type).child("name").setValue(s);
         Bundle bundle = new Bundle();
         bundle.putString("mood", s);
         MoodResponse moodResponse=new MoodResponse();
@@ -171,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
     public void capturedDescription(String s,String type,ArrayList<String> list) {
         arrayList=list;
         arrayList.add(s);
-        mdatabase.child(person).child(time).child("Activity").child("information").setValue(s);
+        mdatabase.child(person).child("Journal").child(time).child("Activity").child(type).child("information").setValue(s);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         Bundle bundle = new Bundle();
 
@@ -659,7 +696,6 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
 
 
 
-
     }
 
     @Override
@@ -738,7 +774,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
     @Override
     public void onElseSelected(String share,String type) {
         arrayList.add(share);
-        mdatabase.child(person).child(time).child("AnythingElse").setValue(share);
+        mdatabase.child(person).child("Journal").child(time).child("AnythingElse").setValue(share);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         if(share.equals("None")){
             Bundle bundle = new Bundle();
@@ -840,7 +876,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
     public void someMedicStarted(String share,String type) {
         arrayList.add(share);
         if(type.equals("1")) {
-            mdatabase.child(person).child(time).child("SomeFoodChanges").setValue(share);
+            mdatabase.child(person).child("Journal").child(time).child("SomeFoodChanges").setValue(share);
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             Bundle bundle = new Bundle();
             bundle.putString("type", "2");
@@ -851,7 +887,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             fragmentTransaction.add(R.id.container, mediaShare);
             fragmentTransaction.commit();
         }else if(type.equals("2")){
-            mdatabase.child(person).child(time).child("SomeMedicationStarted").setValue(share);
+            mdatabase.child(person).child("Journal").child(time).child("SomeMedicationStarted").setValue(share);
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             Bundle bundle = new Bundle();
             bundle.putString("type", "3");
@@ -864,7 +900,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             fragmentTransaction.add(R.id.container, mediaShare);
             fragmentTransaction.commit();
         }else if(type.equals("3")){
-            mdatabase.child(person).child(time).child("SomeSleepingChanges").setValue(share);
+            mdatabase.child(person).child("Journal").child(time).child("SomeSleepingChanges").setValue(share);
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.container,new EndChat());
             fragmentTransaction.commit();
@@ -879,7 +915,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
     @Override
     public void onwhen(String when, String type) {
         arrayList.add(when);
-        mdatabase.child(person).child(time).child("When").setValue(when);
+        mdatabase.child(person).child("Journal").child(time).child("When").setValue(when);
         Toast.makeText(this, when, Toast.LENGTH_SHORT).show();
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         Bundle bundle = new Bundle();
@@ -895,12 +931,13 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
         fragmentTransaction.add(R.id.container,whereHappened);
         fragmentTransaction.commit();
 
+
     }
 
     @Override
     public void whereHappened(String when, String type) {
         arrayList.add(when);
-        mdatabase.child(person).child(time).child("Where").setValue(when);
+        mdatabase.child(person).child("Journal").child(time).child("Where").setValue(when);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         MoodOfChild moodOfChild=new MoodOfChild();
         Bundle bundle=new Bundle();
@@ -917,7 +954,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
         for(int i=0;i<arraylist.size();i++){
             arrayList.add(arraylist.get(i));
         }
-        mdatabase.child(person).child(time).child("childMood").setValue(arraylist);
+        mdatabase.child(person).child("Journal").child(time).child("childMood").setValue(arraylist);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         TimeOfChild timeOfChild=new TimeOfChild();
         Bundle bundle=new Bundle();
@@ -926,13 +963,12 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
         arrayList.add("For how long was the child having trouble ?");
         fragmentTransaction.add(R.id.container,timeOfChild);
         fragmentTransaction.commit();
-
     }
 
     @Override
     public void someTime(String desc, String type) {
         arrayList.add(desc);
-        mdatabase.child(person).child(time).child("HowLong").setValue(desc);
+        mdatabase.child(person).child("Journal").child(time).child("HowLong").setValue(desc);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         WhatDidYouDo whatDidYouDo=new WhatDidYouDo();
         Bundle bundle=new Bundle();
@@ -946,7 +982,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
     @Override
     public void whatYouDo(String when, String type) {
         arrayList.add(when);
-        mdatabase.child(person).child(time).child("whatYouDo").setValue(when);
+        mdatabase.child(person).child("Journal").child(time).child("whatYouDo").setValue(when);
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         if(type.equals("9")){
             AnythingElse anythingElse=new AnythingElse();
@@ -972,7 +1008,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
     @Override
     public void possibleTrigger(String when, String type) {
         arrayList.add(when);
-        mdatabase.child(person).child(time).child("Trigger").setValue(when);
+        mdatabase.child(person).child("Journal").child(time).child("Trigger").setValue(when);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if(type.equals("13") || type.equals("14")){
             AnythingElse anythingElse=new AnythingElse();
@@ -1007,7 +1043,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             fragmentTransaction.commit();
         }else if(type.equals("16")){
             Bundle bundle=new Bundle();
-            mdatabase.child(person).child(time).child("FoodHabitsGeneral").setValue(name);
+            mdatabase.child(person).child("Journal").child("FoodHabitsGeneral").setValue(name);
             bundle.putString("type","17");
             bundle.putString("name",person);
             OnBoard onBoard=new OnBoard();
@@ -1016,7 +1052,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
             fragmentTransaction.add(R.id.container,onBoard);
             fragmentTransaction.commit();
         }else if(type.equals("17")){
-            mdatabase.child(person).child(time).child("SleepHabitsGeneral").setValue(name);
+            mdatabase.child(person).child("Journal").child("SleepHabitsGeneral").setValue(name);
             FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.container,new StartJournaling());
             MoodMeter moodMeter=new MoodMeter();
@@ -1034,16 +1070,16 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder=new AlertDialog.Builder(this);
-        builder.setMessage("Do you want to save the data before exiting?") .setTitle("Save As")
+        builder.setMessage("Journaling will end. Are you sure?") .setTitle("Exit")
                 .setCancelable(false)
-                .setPositiveButton("Save and Exit", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Yes, I am Sure.", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         finish();
                     }
                 })
-                .setNegativeButton("Exit without saving", new DialogInterface.OnClickListener() {
+                .setNegativeButton("No, I want to continue.", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        finishAndRemoveTask();
+                        dialog.cancel();
                     }
                 });
         AlertDialog alert = builder.create();
@@ -1053,8 +1089,7 @@ public class MainActivity extends AppCompatActivity implements MoodMeter.onSomeE
 
     @Override
     public void chatEnded() {
-        Intent intent=new Intent(this,Summary.class);
-        intent.putExtra("list",arrayList);
-        startActivity(intent);
+        Toast.makeText(this, "Thank You", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

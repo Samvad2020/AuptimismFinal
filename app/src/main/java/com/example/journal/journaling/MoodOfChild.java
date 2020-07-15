@@ -1,4 +1,4 @@
-package com.example.journal;
+package com.example.journal.journaling;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +11,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 
+import com.example.journal.R;
 import com.eyalbira.loadingdots.LoadingDots;
 
 import java.util.ArrayList;

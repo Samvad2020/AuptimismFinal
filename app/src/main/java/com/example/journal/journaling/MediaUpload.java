@@ -1,4 +1,4 @@
-package com.example.journal;
+package com.example.journal.journaling;
 
 import android.Manifest;
 import android.content.Context;
@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.journal.R;
 import com.eyalbira.loadingdots.LoadingDots;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -165,6 +166,7 @@ public class MediaUpload extends Fragment {
         if(path!=null){
             Uri file = Uri.fromFile(new File(path));
             StorageReference riversRef = mStorageRef.child(path);
+            Toast.makeText(getActivity(), "Uploading Please wait", Toast.LENGTH_SHORT).show();
             riversRef.putFile(file)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -175,7 +177,7 @@ public class MediaUpload extends Fragment {
                             SharedPreferences prefs = getActivity().getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE);
                             String time=prefs.getString("time","today");
                             String name=prefs.getString("Name","child");
-                            mdatabase.child(name).child(time).child("ImageUrl").child(type).setValue(downloadUrl+"");
+                            mdatabase.child(name).child("Journal").child(time).child("ImageUrl").child(type).setValue(downloadUrl+"");
                             Toast.makeText(getActivity(), "Upload Successful", Toast.LENGTH_SHORT).show();
                             someEventListener.MediaShared(true,type);
                             imageView.setEnabled(false);

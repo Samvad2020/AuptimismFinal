@@ -1,11 +1,16 @@
-package com.example.journal;
+package com.example.journal.homeplan;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.journal.model.DailyLifeItem;
+import com.example.journal.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -38,12 +43,27 @@ public class RecyclerAdapterDailyLife extends RecyclerView.Adapter<RecyclerAdapt
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final UserViewHolder holder, int position) {
         DailyLifeItem dailyLifeItem=videos.get(position);
         holder.txt_Name.setText(dailyLifeItem.getName());
         holder.txt_TimeSpent.setText(dailyLifeItem.getTimeSpent());
         holder.txt_TimeLeft.setText(dailyLifeItem.getTimeLeft());
         holder.txt_difficultyLevel.setText(dailyLifeItem.getDifficulty());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClick(holder.getAdapterPosition());
+            }
+        });
+        holder.txt_progress.setText(dailyLifeItem.getProgress()+"% Complete");
+        String lastFourDigits=videos.get(position).getImgActivityUrl().substring(videos.get(position).getImgActivityUrl().length()-4);
+        if(lastFourDigits.substring(0,1).equals(".")){
+            Picasso.get().load(videos.get(position).getImgActivityUrl()).into(holder.imageActivity);
+            Log.d("checker","yes");
+        }else{
+            Picasso.get().load("https://img.youtube.com/vi/"+videos.get(position).getImgActivityUrl()+"/0.jpg").into(holder.imageActivity);
+        }
+
     }
 
     @Override
@@ -57,6 +77,7 @@ public class RecyclerAdapterDailyLife extends RecyclerView.Adapter<RecyclerAdapt
         TextView txt_TimeLeft;
         TextView txt_difficultyLevel;
         TextView txt_TimeSpent;
+        TextView txt_progress;
         View itemView;
 
 
@@ -67,6 +88,7 @@ public class RecyclerAdapterDailyLife extends RecyclerView.Adapter<RecyclerAdapt
             txt_TimeLeft=itemView.findViewById(R.id.txt_timeleft);
             txt_difficultyLevel=itemView.findViewById(R.id.txt_difficulty);
             txt_TimeSpent=itemView.findViewById(R.id.txt_timeSpent);
+            txt_progress=itemView.findViewById(R.id.txt_progress);
             this.itemView=itemView;
         }
     }

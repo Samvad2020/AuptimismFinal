@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -13,13 +14,43 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".Documents.DocumentsActivity"></activity>
+        <activity android:name=".Information.InformationScreen" />
+        <activity android:name=".Information.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SideNavBar.ContactUsActivity" />
+        <activity android:name=".IEP.IEPActivity" />
+        <activity android:name=".MyProfile.MyProfileActivity" />
+        <activity
+            android:name=".homeplan.MediaPlayingActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_media_playing"
+            android:theme="@style/FullscreenTheme" />
+        <activity android:name=".homeplan.HomePlanActivityDetailedInfo" />
+        <activity
+            android:name=".homeplan.HomePlan"
+            android:label="@string/title_activity_home_plan" >
+        </activity>
+        <activity android:name=".dummydatacreator.ShowAllActivities" />
+        <activity android:name=".dummydatacreator.HomePlanDemo" />
+        <activity android:name=".authentication.LoginActivity" />
+        <activity android:name=".authentication.ResetPasswordActivity" />
+        <activity android:name=".authentication.SignupActivity" />
+        <activity android:name=".journaling.Summary" />
+        <activity android:name=".journaling.MainActivity" />
+
+        <service
+            android:name=".Notification.MyMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

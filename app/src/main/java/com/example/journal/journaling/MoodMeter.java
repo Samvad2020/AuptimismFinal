@@ -1,4 +1,4 @@
-package com.example.journal;
+package com.example.journal.journaling;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
@@ -13,6 +13,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.journal.R;
 import com.eyalbira.loadingdots.LoadingDots;
 import com.ramotion.circlemenu.CircleMenuView;
 

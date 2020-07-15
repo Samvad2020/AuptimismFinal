@@ -3,6 +3,7 @@
     android:orientation="vertical"
     android:background="#fff"
     android:layout_width="wrap_content"
+    android:layout_marginTop="20dp"
     android:layout_height="wrap_content">
     <com.eyalbira.loadingdots.LoadingDots
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -28,23 +29,36 @@
         android:id="@+id/rootLayout"
         android:visibility="gone"
         android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profileImage"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/profile"
+            app:civ_border_width="2dp"
+            android:layout_gravity="center"
+            app:civ_border_color="#fff"/>
     <TextView
         android:layout_width="wrap_content"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:background="@drawable/background"
-        android:layout_marginTop="20dp"
         android:text="How was the child feeling at that time?"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="5dp"
         android:textStyle="bold"
         android:textColor="#fff"
         android:layout_height="wrap_content"/>
+        </LinearLayout>
     <CheckBox
         android:id="@+id/aggressive"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Aggressive"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:textSize="10dp" />
     <CheckBox
@@ -52,7 +66,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Annoyed"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:textSize="10dp" />
     <CheckBox
@@ -60,7 +74,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Grumpy"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:textSize="10dp" />
     <CheckBox
@@ -68,7 +82,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Crying"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:textSize="10dp" />
     <CheckBox
@@ -76,7 +90,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Sleepy"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:textSize="10dp" />
     <CheckBox
@@ -84,7 +98,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Irritated"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:textSize="10dp" />
     <CheckBox
@@ -92,7 +106,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Self Harm"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:textSize="10dp" />
     <CheckBox
@@ -100,12 +114,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Other"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:textSize="10dp" />
     <Button
         android:layout_width="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:id="@+id/submitMood"
         android:text="SUBMIT"

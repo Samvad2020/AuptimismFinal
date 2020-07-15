@@ -1,4 +1,4 @@
-package com.example.journal;
+package com.example.journal.journaling;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.journal.R;
 import com.eyalbira.loadingdots.LoadingDots;
 
 import java.util.ArrayList;
